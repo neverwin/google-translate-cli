@@ -1,15 +1,16 @@
 Google Translate CLI
-====================
+=======================
 
-Command-line translation program written in C++11 using Boost::Asio and Boost::Beast
+Up-to-date command-line translation program written in C++14 using Boost
 
-**WARNING** The project is for research purpose only. Abuse is forbidden and use it at your own risk.
+**WARNING** The project is for research purpose only. Abuse and commercial use are forbidden. Use it at your own risk.
 
 ## Build
 
 Prerequisites are:
 
-* Boost with Asio and Beast
+* Boost with Asio, Beast and Property Tree
+* OpenSSL
 * Compiler with C++14
 * CMake 3.0+
 
@@ -20,7 +21,7 @@ mkdir build && cd build
 cmake .. && make
 ~~~
 
-## Reference
+## Other References (maybe outdated)
 
 * <https://github.com/matheuss/google-translate-api>
 
