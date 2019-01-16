@@ -9,7 +9,7 @@ Up-to-date command-line translation program written in C++14 using Boost
 
 Prerequisites are:
 
-* Boost with Asio, Beast and Property Tree
+* Boost 1.66+
 * OpenSSL
 * Compiler with C++14
 * CMake 3.0+
