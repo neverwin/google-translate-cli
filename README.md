@@ -21,6 +21,17 @@ mkdir build && cd build
 cmake .. && make
 ~~~
 
+## Usage
+
+translate [language_from language_to]
+
+Example:
+
+~~~bash
+$ echo hello world | translate en zh-cn
+你好，世界
+~~~
+
 ## Other References (maybe outdated)
 
 * <https://github.com/matheuss/google-translate-api>
