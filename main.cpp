@@ -20,7 +20,7 @@ using namespace std;
 
 const string host{HOST_DEFAULT};
 
-const array<string, 38> langs{
+const array<string, 105> langs{
     "auto", //Automatic
     "af", //Afrikaans
     "sq", //Albanian
@@ -200,7 +200,7 @@ string translate(boost::asio::ssl::stream<boost::asio::ip::tcp::socket> & stream
 
 int main(int argc, char ** argv) {
     string text;
-    if (argc == 1) from = LANGUAGE_DEFAULT_FROM, to = LANGUAGE_DEFAULT_TO; 
+    if (argc == 1) from = LANGUAGE_DEFAULT_FROM, to = LANGUAGE_DEFAULT_TO;
     else if (argc == 3) from = argv[1], to = argv[2];
     else {
         cerr << "Usage: translate [<from>] [<to>]" << endl;
