@@ -18,6 +18,9 @@
 #include <regex>
 
 using namespace std;
+using tcp = boost::asio::ip::tcp;
+namespace ssl = boost::asio::ssl;
+namespace http = boost::beast::http;
 
 const string host{HOST_DEFAULT};
 
@@ -162,15 +165,15 @@ string cal_token(const string & text) {
     return to_string(a) + "." + to_string(a ^ t0);
 }
 
-void get_tkk(boost::asio::ssl::stream<boost::asio::ip::tcp::socket> & stream) {
-    boost::beast::http::request<boost::beast::http::string_body> req{boost::beast::http::verb::get, "/", 11};
-    req.set(boost::beast::http::field::host, host);
+void get_tkk(ssl::stream<tcp::socket> & stream) {
+    http::request<http::string_body> req{http::verb::get, "/", 11};
+    req.set(http::field::host, host);
     
-    boost::beast::http::write(stream, req);
+    http::write(stream, req);
     
     boost::beast::flat_buffer buffer;
-    boost::beast::http::response<boost::beast::http::string_body> res;
-    boost::beast::http::read(stream, buffer, res);
+    http::response<http::string_body> res;
+    http::read(stream, buffer, res);
     
     regex rgx{"TKK[:=]'(\\d+?).(\\d+?)'", regex::icase | regex::optimize};
     smatch sm;
@@ -179,18 +182,18 @@ void get_tkk(boost::asio::ssl::stream<boost::asio::ip::tcp::socket> & stream) {
     t0 = stoul(sm.str(1)), t1 = stoul(sm.str(2));
 }
 
-string translate(boost::asio::ssl::stream<boost::asio::ip::tcp::socket> & stream, const string & text) {
+string translate(ssl::stream<tcp::socket> & stream, const string & text) {
     string token = cal_token(text);
     string url = build_url(token, text);
     
-    boost::beast::http::request<boost::beast::http::string_body> req{boost::beast::http::verb::get, url, 11};
-    req.set(boost::beast::http::field::host, host);
+    http::request<http::string_body> req{http::verb::get, url, 11};
+    req.set(http::field::host, host);
     
-    boost::beast::http::write(stream, req);
+    http::write(stream, req);
     
     boost::beast::flat_buffer buffer;
-    boost::beast::http::response<boost::beast::http::string_body> res;
-    boost::beast::http::read(stream, buffer, res);
+    http::response<http::string_body> res;
+    http::read(stream, buffer, res);
     
     boost::property_tree::ptree tree;
     istringstream is{res.body()};
@@ -219,19 +222,19 @@ int main(int argc, char ** argv) {
     try {
         boost::asio::io_context ioc;
         //SSL
-        boost::asio::ssl::context ctx{boost::asio::ssl::context::sslv23_client};
+        ssl::context ctx{ssl::context::sslv23_client};
         ctx.set_default_verify_paths();
-        ctx.set_verify_mode(boost::asio::ssl::verify_peer);;
-        boost::asio::ssl::stream<boost::asio::ip::tcp::socket> stream{ioc, ctx};
+        ctx.set_verify_mode(ssl::verify_peer);;
+        ssl::stream<tcp::socket> stream{ioc, ctx};
         if (!SSL_set_tlsext_host_name(stream.native_handle(), host.c_str())) {
             boost::system::error_code ec{static_cast<int>(::ERR_get_error()), boost::asio::error::get_ssl_category()};
             throw boost::system::system_error{ec};
         }
         //DNS
-        boost::asio::ip::tcp::resolver resolver{ioc};
+        tcp::resolver resolver{ioc};
         auto const results = resolver.resolve(host, "443");
         boost::asio::connect(stream.next_layer(), results.begin(), results.end());
-        stream.handshake(boost::asio::ssl::stream_base::client);
+        stream.handshake(ssl::stream_base::client);
         //CHECK
         get_tkk(stream);
         //TRANSLATE
@@ -241,7 +244,7 @@ int main(int argc, char ** argv) {
         boost::system::error_code ec;
         stream.shutdown(ec);
         if (ec == boost::asio::error::eof) ec.assign(0, ec.category());
-        if (ec && ec != boost::asio::ssl::error::stream_truncated) throw boost::system::system_error{ec};
+        if (ec && ec != ssl::error::stream_truncated) throw boost::system::system_error{ec};
     } catch (exception const & e) {
         cerr << "Error: " << e.what() << endl;
         return EXIT_FAILURE;
