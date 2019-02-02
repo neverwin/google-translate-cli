@@ -1,5 +1,7 @@
 Google Translate CLI
 =======================
+[![Status](https://img.shields.io/badge/status-working-green.svg)]()
+[![Cirrus CI](https://api.cirrus-ci.com/github/neverwin/google-translate-cli.svg?branch=master)](https://cirrus-ci.com/github/neverwin/google-translate-cli)
 
 Up-to-date command-line translation program written in C++14 using Boost
 

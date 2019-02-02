@@ -1,0 +1,27 @@
+container:
+  image: debian:stretch
+
+task:
+  env:
+    CIRRUS_CLONE_DEPTH: 1
+  boost_cache:
+    folder: depend/boost
+    fingerprint_script: echo 1
+    populate_script:
+      - apt-get update -y
+      - apt-get install -y wget build-essential
+      - mkdir -p cache/boost depend/boost
+      - cd cache/boost
+      - wget https://dl.bintray.com/boostorg/release/1.69.0/source/boost_1_69_0.tar.bz2
+      - tar -xf boost_1_69_0.tar.bz2
+      - cd boost_1_69_0
+      - ./bootstrap.sh --prefix=$CIRRUS_WORKING_DIR/depend/boost/
+      - ./b2 install
+  prebuild_script:
+    - apt-get update -y
+    - apt-get install -y build-essential cmake libssl-dev
+  build_script:
+    - mkdir build
+    - cd build
+    - cmake .. -DBOOST_ROOT=$CIRRUS_WORKING_DIR/depend/boost
+    - make
