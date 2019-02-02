@@ -8,6 +8,7 @@
 #include <boost/asio/ssl/stream.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/locale/generator.hpp>
 
 #include <cstdlib>
 #include <algorithm>
@@ -199,6 +200,11 @@ string translate(boost::asio::ssl::stream<boost::asio::ip::tcp::socket> & stream
 }
 
 int main(int argc, char ** argv) {
+    boost::locale::generator gen;
+    locale loc = gen("");
+    cin.imbue(loc);
+    cout.imbue(loc);
+    
     string text;
     if (argc == 1) from = LANGUAGE_DEFAULT_FROM, to = LANGUAGE_DEFAULT_TO;
     else if (argc == 3) from = argv[1], to = argv[2];
