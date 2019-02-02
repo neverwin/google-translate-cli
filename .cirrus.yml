@@ -17,9 +17,36 @@ task:
       - cd boost_1_69_0
       - ./bootstrap.sh --prefix=$CIRRUS_WORKING_DIR/depend/boost/
       - ./b2 install
+  boost_mingw_cache:
+    folder: depend/boost_mingw
+    fingerprint_script: echo 1
+    populate_script:
+      - apt-get update -y
+      - apt-get install -y wget build-essential mingw-w64
+      - mkdir -p cache/boost_mingw depend/boost_mingw
+      - cd cache/boost_mingw
+      - wget https://dl.bintray.com/boostorg/release/1.69.0/source/boost_1_69_0.tar.bz2
+      - tar -xf boost_1_69_0.tar.bz2
+      - cd boost_1_69_0
+      - 'echo using gcc : mingw32 : i686-w64-mingw32-g++ : \<rc\>i686-w64-mingw32-windres \<archiver\>i686-w64-mingw32-ar \<ranlib\>i686-w64-mingw32-ranlib \;  > user_config.jam'
+      - ./bootstrap.sh --prefix=$CIRRUS_WORKING_DIR/depend/boost_mingw/
+      - ./b2 install --user-config=user_config.jam binary-format=pe abi=ms
+  openssl_mingw_cache:
+    folder: depend/openssl_mingw
+    fingerprint_script: echo 1
+    populate_script:
+      - apt-get update -y
+      - apt-get install -y wget build-essential mingw-w64
+      - mkdir -p cache/openssl_mingw depend/openssl_mingw
+      - cd cache/openssl_mingw
+      - wget https://www.openssl.org/source/openssl-1.1.0j.tar.gz
+      - tar -xf openssl-1.1.0j.tar.gz
+      - cd openssl-1.1.0j
+      - ./Configure mingw -static --cross-compile-prefix=i686-w64-mingw32- --prefix=$CIRRUS_WORKING_DIR/depend/openssl_mingw/
+      - make install
   prebuild_script:
     - apt-get update -y
-    - apt-get install -y build-essential cmake libssl-dev
+    - apt-get install -y build-essential cmake libssl-dev mingw-w64
   build_script:
     - mkdir build
     - cd build
