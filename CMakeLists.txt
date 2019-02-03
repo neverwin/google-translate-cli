@@ -5,7 +5,12 @@ project(google-translate-cli LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+set(OPENSSL_USE_STATIC_LIBS TRUE)
+set(OPENSSL_MSVC_STATIC_RT TRUE)
 find_package(OpenSSL REQUIRED)
+
+set(Boost_USE_STATIC_LIBS TRUE)
+set(Boost_USE_STATIC_RUNTIME TRUE)
 find_package(Boost 1.66.0 REQUIRED COMPONENTS system thread locale)
 
 set(HOST_DEFAULT translate.google.com CACHE STRING "Default host")
@@ -23,4 +28,4 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 add_executable(translate ${PROJECT_SOURCE_DIR}/main.cpp)
 
-target_link_libraries(translate ${Boost_LIBRARIES} ${OPENSSL_LIBRARIES})
+target_link_libraries(translate ${Boost_LIBRARIES} ${OPENSSL_LIBRARIES} ${CMAKE_DL_LIBS})
