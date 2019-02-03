@@ -4,6 +4,7 @@ container:
 task:
   env:
     CIRRUS_CLONE_DEPTH: 1
+    BINTRAY_TOKEN: ENCRYPTED[36ef999e208aebf2d19c6408f39a855e4a82488437611e5dd9a5cc66fe3b7a188e19dc964ff3de106fc2ed2a63ae0dcb]
   boost_cache:
     folder: depend/boost
     fingerprint_script: echo 1
@@ -46,14 +47,18 @@ task:
       - make install
   prebuild_script:
     - apt-get update -y
-    - apt-get install -y build-essential cmake libssl-dev mingw-w64
+    - apt-get install -y build-essential cmake libssl-dev mingw-w64 curl
   build_script:
     - mkdir build
     - cd build
     - cmake .. -DBOOST_ROOT=$CIRRUS_WORKING_DIR/depend/boost
-    - make
+    - make VERBOSE=1
   build_mingw_script:
     - mkdir build_mingw
     - cd build_mingw
     - cmake .. -DBOOST_ROOT=$CIRRUS_WORKING_DIR/depend/boost_mingw -DOPENSSL_ROOT_DIR=$CIRRUS_WORKING_DIR/depend/openssl_mingw -DCMAKE_TOOLCHAIN_FILE=$CIRRUS_WORKING_DIR/mingw-w64-toolchain.cmake
-    - make
+    - make VERBOSE=1
+  release_script:
+    - strip build/translate
+    - i686-w64-mingw32-strip build_mingw/translate.exe
+    - bash release.sh
