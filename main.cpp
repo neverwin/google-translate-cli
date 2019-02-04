@@ -224,7 +224,7 @@ int main(int argc, char ** argv) {
         //SSL
         ssl::context ctx{ssl::context::sslv23_client};
         ctx.set_default_verify_paths();
-        ctx.set_verify_mode(ssl::verify_peer);;
+        ctx.set_verify_mode(ssl::verify_none);
         ssl::stream<tcp::socket> stream{ioc, ctx};
         if (!SSL_set_tlsext_host_name(stream.native_handle(), host.c_str())) {
             boost::system::error_code ec{static_cast<int>(::ERR_get_error()), boost::asio::error::get_ssl_category()};
